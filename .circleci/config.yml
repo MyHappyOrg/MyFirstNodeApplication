@@ -1,0 +1,93 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: google/cloud-sdk:latest
+    working_directory: ~/app
+    steps:
+      - run:
+         name: Install essentials (git/node)
+         command: |
+            export DEBIAN_FRONTEND=noninteractive
+            apt-get update
+            apt-get -y install git
+            apt-get -y install curl software-properties-common
+            curl -sL https://deb.nodesource.com/setup_10.x | bash -
+            apt-get -y install nodejs
+            apt-get -y install wget
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Tag image
+          command: |
+             if [ "${CIRCLE_BRANCH}" == "master" ]
+             then
+               echo $GCLOUD_SERVICE_KEY_prod | base64 --decode --ignore-garbage > ${HOME}/app/gcloud-service-key.json
+               gcloud auth activate-service-account --key-file ${HOME}/app/gcloud-service-key.json
+               gcloud --quiet config set project $GOOGLE_PROJECT_ID_prod
+               gcloud --quiet config set compute/zone $GOOGLE_COMPUTE_ZONE_prod
+             fi
+             set -x
+             DOCKER_IMAGE_TAG=v${CIRCLE_BUILD_NUM}
+             echo "nodejs:$DOCKER_IMAGE_TAG" > full_docker_image_name
+      - run:
+          name: Build image
+          command: |
+             FULL_DOCKER_IMAGE_NAME=$(cat full_docker_image_name)
+             docker build -t $FULL_DOCKER_IMAGE_NAME .
+      - run:
+          name: Push image
+          command: |
+             if [ "${CIRCLE_BRANCH}" == "master" ]
+             then
+               FULL_DOCKER_IMAGE_NAME=$(cat full_docker_image_name)
+               echo $GCLOUD_SERVICE_KEY_prod | base64 --decode --ignore-garbage > ${HOME}/app/gcloud-service-key.json
+               gcloud auth activate-service-account --key-file ${HOME}/app/gcloud-service-key.json
+               gcloud --quiet auth configure-docker
+               docker tag $FULL_DOCKER_IMAGE_NAME gcr.io/$GOOGLE_PROJECT_ID_prod/$FULL_DOCKER_IMAGE_NAME
+               docker push gcr.io/$GOOGLE_PROJECT_ID_prod/$FULL_DOCKER_IMAGE_NAME
+             fi
+      - persist_to_workspace:
+         root: .
+         paths:
+           - full_docker_image_name
+  deploy_to_prod:
+    docker:
+      - image: google/cloud-sdk:latest
+    working_directory: ~/app
+    steps:
+      - checkout
+      - setup_remote_docker
+      - attach_workspace:
+          at: workspace
+      - run:
+          name: Deploy to prod
+          command: |
+            echo $GCLOUD_SERVICE_KEY_prod | base64 --decode --ignore-garbage > ${HOME}/app/gcloud-service-key.json
+            gcloud auth activate-service-account --key-file ${HOME}/app/gcloud-service-key.json
+            gcloud --quiet config set project $GOOGLE_PROJECT_ID_prod
+            gcloud --quiet config set compute/zone $GOOGLE_COMPUTE_ZONE_prod
+            gcloud --quiet auth configure-docker
+            gcloud container clusters get-credentials mycluster --region asia-south1 --project $GOOGLE_PROJECT_ID_prod
+            kubectl delete service my-first-spring-application --ignore-not-found=true
+            kubectl delete deployment my-first-spring-application --ignore-not-found=true
+            FULL_DOCKER_IMAGE_NAME=$(cat workspace/full_docker_image_name)
+            DEV_KUBE_CONFIG=$(cat kube-deploy-prod.yml | sed "s|DOCKER_IMAGE_NAME|$FULL_DOCKER_IMAGE_NAME|g")
+            echo "$DEV_KUBE_CONFIG" | kubectl apply -f -
+workflows:
+  version: 2
+  build-approve-deploy:
+    jobs:
+      - build
+      - hold:
+          type: approval # <<< This key-value pair will set your workflow to a status of "On Hold"
+          requires: # We only run the "hold" job when build has succeeded
+            - build
+# On approval of the `hold` job, any successive job that requires the `hold` job will run.
+# In this case, a user is manually triggering the deploy job.
+      - deploy_to_prod:
+          requires:
+            - hold
+          filters:
+            branches:
+              only: master

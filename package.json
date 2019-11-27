@@ -1,0 +1,25 @@
+{
+  "name": "myfirstnodeapplication",
+  "version": "1.0.0",
+  "description": "My First NodeJS Application",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MyHappyOrg/MyFirstNodeApplication.git"
+  },
+  "author": "Happy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MyHappyOrg/MyFirstNodeApplication/issues"
+  },
+  "homepage": "https://github.com/MyHappyOrg/MyFirstNodeApplication#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "morgan": "^1.9.1"
+  }
+}
