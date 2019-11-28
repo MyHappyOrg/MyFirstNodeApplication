@@ -11,6 +11,6 @@ spec:
    spec:
      containers:
      - name: my-nodejs-application
-       image: gcr.io/$GOOGLE_PROJECT_ID_prod/DOCKER_IMAGE_NAME
+       image: gcr.io/airy-adapter-258403/DOCKER_IMAGE_NAME
        ports:
          - containerPort: 3002
