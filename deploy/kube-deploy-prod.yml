@@ -13,4 +13,4 @@ spec:
      - name: my-nodejs-application
        image: gcr.io/airy-adapter-258403/DOCKER_IMAGE_NAME
        ports:
-         - containerPort: 8080
+         - containerPort: 3002
