@@ -68,7 +68,7 @@ jobs:
             gcloud --quiet config set project $GOOGLE_PROJECT_ID_prod
             gcloud --quiet config set compute/zone $GOOGLE_COMPUTE_ZONE_prod
             gcloud --quiet auth configure-docker
-            gcloud container clusters get-credentials mycluster --region asia-south1 --project $GOOGLE_PROJECT_ID_prod
+            gcloud container clusters get-credentials $GOOGLE_CLUSTER_prod --region $GOOGLE_COMPUTE_ZONE_prod --project $GOOGLE_PROJECT_ID_prod
             kubectl delete service my-nodejs-application --ignore-not-found=true
             kubectl delete deployment my-nodejs-application --ignore-not-found=true
             FULL_DOCKER_IMAGE_NAME=$(cat workspace/full_docker_image_name)
