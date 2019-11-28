@@ -69,10 +69,10 @@ jobs:
             gcloud --quiet config set compute/zone $GOOGLE_COMPUTE_ZONE_prod
             gcloud --quiet auth configure-docker
             gcloud container clusters get-credentials mycluster --region asia-south1 --project $GOOGLE_PROJECT_ID_prod
-            kubectl delete service my-first-spring-application --ignore-not-found=true
-            kubectl delete deployment my-first-spring-application --ignore-not-found=true
+            kubectl delete service my-nodejs-application --ignore-not-found=true
+            kubectl delete deployment my-nodejs-application --ignore-not-found=true
             FULL_DOCKER_IMAGE_NAME=$(cat workspace/full_docker_image_name)
-            DEV_KUBE_CONFIG=$(cat kube-deploy-prod.yml | sed "s|DOCKER_IMAGE_NAME|$FULL_DOCKER_IMAGE_NAME|g")
+            DEV_KUBE_CONFIG=$(cat deploy/kube-deploy-prod.yml | sed "s|DOCKER_IMAGE_NAME|$FULL_DOCKER_IMAGE_NAME|g")
             echo "$DEV_KUBE_CONFIG" | kubectl apply -f -
 workflows:
   version: 2
