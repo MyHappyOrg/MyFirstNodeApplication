@@ -2,8 +2,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: my-nodejs-application-ingress
-  annotations:
-    kubernetes.io/ingress.global-static-ip-name: my-static-ip
+  namespace: default
 spec:
   backend:
     serviceName: my-nodejs-application-np
