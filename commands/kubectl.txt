@@ -9,3 +9,9 @@ Apply LoadBalancer Service
 kubectl apply -f <FILE_NAME>
 
 kubectl delete -f <FILE_NAME>
+
+Delete Auto-Scaling
+-------------------
+kubectl get hpa
+
+kubectl delete hpa <HPA_NAME>
