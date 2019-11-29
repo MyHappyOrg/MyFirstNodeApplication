@@ -74,7 +74,7 @@ jobs:
             FULL_DOCKER_IMAGE_NAME=$(cat workspace/full_docker_image_name)
             DEV_KUBE_CONFIG=$(cat deploy/kube-deploy-prod.yml | sed "s|DOCKER_IMAGE_NAME|$FULL_DOCKER_IMAGE_NAME|g" | sed "s|GOOGLE_PROJECT_ID|$GOOGLE_PROJECT_ID_prod|g")
             echo "$DEV_KUBE_CONFIG" | kubectl apply -f -
-  assign_load_balancer:
+  configure_node_port:
     docker:
       - image: google/cloud-sdk:latest
     working_directory: ~/app
@@ -84,7 +84,27 @@ jobs:
       - attach_workspace:
           at: workspace
       - run:
-          name: Assign LoadBalancer
+          name: Configure NodePort
+          command: |
+            echo $GCLOUD_SERVICE_KEY_prod | base64 --decode --ignore-garbage > ${HOME}/app/gcloud-service-key.json
+            gcloud auth activate-service-account --key-file ${HOME}/app/gcloud-service-key.json
+            gcloud --quiet config set project $GOOGLE_PROJECT_ID_prod
+            gcloud --quiet config set compute/zone $GOOGLE_COMPUTE_ZONE_prod
+            gcloud --quiet auth configure-docker
+            gcloud container clusters get-credentials $GOOGLE_CLUSTER_prod --region $GOOGLE_COMPUTE_ZONE_prod --project $GOOGLE_PROJECT_ID_prod
+            DEV_KUBE_CONFIG=$(cat deploy/kube-assign-nodeport.yml)
+            echo "$DEV_KUBE_CONFIG" | kubectl apply -f -
+  configure_load_balancer:
+    docker:
+      - image: google/cloud-sdk:latest
+    working_directory: ~/app
+    steps:
+      - checkout
+      - setup_remote_docker
+      - attach_workspace:
+          at: workspace
+      - run:
+          name: Configure LoadBalancer
           command: |
             echo $GCLOUD_SERVICE_KEY_prod | base64 --decode --ignore-garbage > ${HOME}/app/gcloud-service-key.json
             gcloud auth activate-service-account --key-file ${HOME}/app/gcloud-service-key.json
@@ -93,6 +113,26 @@ jobs:
             gcloud --quiet auth configure-docker
             gcloud container clusters get-credentials $GOOGLE_CLUSTER_prod --region $GOOGLE_COMPUTE_ZONE_prod --project $GOOGLE_PROJECT_ID_prod
             DEV_KUBE_CONFIG=$(cat deploy/kube-assign-load-balancer.yml | sed "s|RESERVED_IP_ADDRESS|$GCLOUD_RESERVED_IP_ADDRESS|g")
+            echo "$DEV_KUBE_CONFIG" | kubectl apply -f -
+  configure_auto_scaling:
+    docker:
+      - image: google/cloud-sdk:latest
+    working_directory: ~/app
+    steps:
+      - checkout
+      - setup_remote_docker
+      - attach_workspace:
+          at: workspace
+      - run:
+          name: Configure Auto-Scaling
+          command: |
+            echo $GCLOUD_SERVICE_KEY_prod | base64 --decode --ignore-garbage > ${HOME}/app/gcloud-service-key.json
+            gcloud auth activate-service-account --key-file ${HOME}/app/gcloud-service-key.json
+            gcloud --quiet config set project $GOOGLE_PROJECT_ID_prod
+            gcloud --quiet config set compute/zone $GOOGLE_COMPUTE_ZONE_prod
+            gcloud --quiet auth configure-docker
+            gcloud container clusters get-credentials $GOOGLE_CLUSTER_prod --region $GOOGLE_COMPUTE_ZONE_prod --project $GOOGLE_PROJECT_ID_prod
+            DEV_KUBE_CONFIG=$(cat deploy/kube-auto-scale.yml)
             echo "$DEV_KUBE_CONFIG" | kubectl apply -f -
 workflows:
   version: 2
@@ -111,6 +151,15 @@ workflows:
           filters:
             branches:
               only: master
-      - assign_load_balancer:
+      - configure_auto_scaling:
           requires:
             - hold
+            - deploy_to_prod
+      - configure_node_port:
+          requires:
+            - hold
+            - deploy_to_prod
+      - configure_load_balancer:
+          requires:
+            - hold
+            - deploy_to_prod

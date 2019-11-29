@@ -1,0 +1,12 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: my-nodejs-application-ingress
+spec:
+  rules:
+  - host: node1.happy2happy.com
+    http:
+      paths:
+      - backend:
+          serviceName: my-nodejs-application-np
+          servicePort: 80
