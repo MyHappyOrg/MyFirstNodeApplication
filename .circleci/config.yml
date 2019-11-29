@@ -111,4 +111,6 @@ workflows:
           filters:
             branches:
               only: master
-      - assign_load_balancer
+      - assign_load_balancer:
+          requires:
+            - deploy_to_prod
