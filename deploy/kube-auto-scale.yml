@@ -1,13 +1,17 @@
-apiVersion: autoscaling/v1
+apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
   name: my-nodejs-application-hpa
   namespace: default
 spec:
-    maxReplicas: 5
+    maxReplicas: 6
     minReplicas: 1
     scaleTargetRef:
       apiVersion: apps/v1
       kind: Deployment
       name: my-nodejs-application
-    targetCPUUtilizationPercentage: 90
+    metrics:
+    - type: "Resource"
+      resource:
+        name: "cpu"
+        targetAverageUtilization: 80
