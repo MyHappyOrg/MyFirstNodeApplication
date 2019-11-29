@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+ name: my-nodejs-application-lb
+spec:
+ ports:
+ - port: 80
+   targetPort: 3002
+   protocol: TCP
+   name: http
+ selector:
+   app: my-nodejs-application
+ type: LoadBalancer
+ loadBalancerIP: RESERVED_IP_ADDRESS

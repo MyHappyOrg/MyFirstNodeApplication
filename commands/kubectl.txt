@@ -1,0 +1,11 @@
+Delete LoadBalancer Service
+---------------------------
+kubectl get services
+
+kubectl delete svc <SERVICE_NAME>
+
+Apply LoadBalancer Service
+--------------------------
+kubectl apply -f <FILE_NAME>
+
+kubectl delete -f <FILE_NAME>
