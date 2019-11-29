@@ -14,3 +14,12 @@ spec:
        image: gcr.io/GOOGLE_PROJECT_ID/DOCKER_IMAGE_NAME
        ports:
          - containerPort: 3002
+       livenessProbe:
+          httpGet:
+            path: /ping
+            port: 80
+            httpHeaders:
+              - name: X-health-check
+                value: kubernetes-healthcheck
+              - name: X-Forwarded-Proto
+                value: https
