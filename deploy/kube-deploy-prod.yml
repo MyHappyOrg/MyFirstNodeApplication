@@ -11,6 +11,6 @@ spec:
    spec:
      containers:
      - name: my-nodejs-application
-       image: gcr.io/airy-adapter-258403/nodejs:v54	
+       image: gcr.io/GOOGLE_PROJECT_ID/nodejs:v54	
        ports:
          - containerPort: 3002
