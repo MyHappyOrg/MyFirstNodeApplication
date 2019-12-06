@@ -51,6 +51,7 @@ jobs:
       - persist_to_workspace:
          root: .
          paths:
+           - docker_image_version
            - full_docker_image_name
   deploy_to_prod:
     docker:
