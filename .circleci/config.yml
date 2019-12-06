@@ -76,25 +76,6 @@ jobs:
             FULL_DOCKER_IMAGE_NAME=$(cat workspace/full_docker_image_name)
             DEV_KUBE_CONFIG=$(cat deploy/kube-deploy-prod.yml | sed "s|DOCKER_IMAGE_NAME|$FULL_DOCKER_IMAGE_NAME|g" | sed "s|GOOGLE_PROJECT_ID|$GOOGLE_PROJECT_ID_prod|g" | sed "s|DOCKER_IMAGE_TAG|$DOCKER_IMAGE_TAG|g")
             echo "$DEV_KUBE_CONFIG" | kubectl apply -f -
-  delete_old_pod:
-    docker:
-      - image: google/cloud-sdk:latest
-    working_directory: ~/app
-    steps:
-      - checkout
-      - setup_remote_docker
-      - attach_workspace:
-          at: workspace
-      - run:
-          name: Delete Old Pod
-          command: |
-            echo $GCLOUD_SERVICE_KEY_prod | base64 --decode --ignore-garbage > ${HOME}/app/gcloud-service-key.json
-            gcloud auth activate-service-account --key-file ${HOME}/app/gcloud-service-key.json
-            gcloud --quiet config set project $GOOGLE_PROJECT_ID_prod
-            gcloud --quiet config set compute/zone $GOOGLE_COMPUTE_ZONE_prod
-            gcloud --quiet auth configure-docker
-            gcloud container clusters get-credentials $GOOGLE_CLUSTER_prod --region $GOOGLE_COMPUTE_ZONE_prod --project $GOOGLE_PROJECT_ID_prod
-            #kubectl delete deployment my-nodejs-application --ignore-not-found=true
   configure_node_port:
     docker:
       - image: google/cloud-sdk:latest
@@ -158,6 +139,25 @@ jobs:
             DOCKER_IMAGE_TAG=$(cat workspace/docker_image_version)
             DEV_KUBE_CONFIG=$(cat deploy/kube-auto-scale.yml | sed "s|DOCKER_IMAGE_TAG|$DOCKER_IMAGE_TAG|g")
             echo "$DEV_KUBE_CONFIG" | kubectl apply -f -
+  delete_old_pod:
+    docker:
+      - image: google/cloud-sdk:latest
+    working_directory: ~/app
+    steps:
+      - checkout
+      - setup_remote_docker
+      - attach_workspace:
+          at: workspace
+      - run:
+          name: Delete Old Pod
+          command: |
+            echo $GCLOUD_SERVICE_KEY_prod | base64 --decode --ignore-garbage > ${HOME}/app/gcloud-service-key.json
+            gcloud auth activate-service-account --key-file ${HOME}/app/gcloud-service-key.json
+            gcloud --quiet config set project $GOOGLE_PROJECT_ID_prod
+            gcloud --quiet config set compute/zone $GOOGLE_COMPUTE_ZONE_prod
+            gcloud --quiet auth configure-docker
+            gcloud container clusters get-credentials $GOOGLE_CLUSTER_prod --region $GOOGLE_COMPUTE_ZONE_prod --project $GOOGLE_PROJECT_ID_prod
+            #kubectl delete deployment my-nodejs-application --ignore-not-found=true
 workflows:
   version: 2
   build-approve-deploy:
