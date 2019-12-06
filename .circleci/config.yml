@@ -187,12 +187,12 @@ workflows:
           requires:
             - verified_deployment?
       - verified_service_configuration?:
-        type: approval
-        requires:
-          - configure_auto_scaling
-          - configure_node_port
-          - configure_load_balancer
+          type: approval
+          requires:
+            - configure_auto_scaling
+            - configure_node_port
+            - configure_load_balancer
       - delete_old_pod:
-        requires:
-            - verified_service_configuration?
+          requires:
+              - verified_service_configuration?
           
