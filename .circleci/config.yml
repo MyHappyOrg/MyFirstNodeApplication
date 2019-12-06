@@ -170,10 +170,10 @@ workflows:
             branches:
               only: master
       - verify_deployment:
-        type: approval # <<< This key-value pair will set your workflow to a status of "On Hold"
-        requires: # We only run the "hold" job when build has succeeded
-          - can_deploy
-          - deploy_to_prod
+          type: approval # <<< This key-value pair will set your workflow to a status of "On Hold"
+          requires: # We only run the "hold" job when build has succeeded
+            - can_deploy
+            - deploy_to_prod
       - delete_old_pod:
           requires:
               - can_deploy
