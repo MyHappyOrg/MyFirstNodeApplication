@@ -169,7 +169,7 @@ workflows:
             - build
       - deploy_to_prod:
           requires:
-            - can_deploy
+            - can_deploy?
           filters:
             branches:
               only: master
