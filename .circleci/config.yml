@@ -157,7 +157,7 @@ workflows:
   build-approve-deploy:
     jobs:
       - build
-      - hold:
+      - hold1:
           type: approval # <<< This key-value pair will set your workflow to a status of "On Hold"
           requires: # We only run the "hold" job when build has succeeded
             - build
@@ -165,23 +165,27 @@ workflows:
 # In this case, a user is manually triggering the deploy job.
       - deploy_to_prod:
           requires:
-            - hold
+            - hold1
           filters:
             branches:
               only: master
+      - hold2:
+        type: approval # <<< This key-value pair will set your workflow to a status of "On Hold"
+        requires: # We only run the "hold" job when build has succeeded
+          - deploy_to_prod
       - delete_old_pod:
           requires:
-              - hold
+              - hold2
               - deploy_to_prod
       - configure_auto_scaling:
           requires:
-            - hold
+            - hold2
             - delete_old_pod
       - configure_node_port:
           requires:
-            - hold
+            - hold2
             - delete_old_pod
       - configure_load_balancer:
           requires:
-            - hold
+            - hold2
             - delete_old_pod
