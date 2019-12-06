@@ -9,4 +9,4 @@ spec:
     - port: 80
       targetPort: 3002
   selector:
-    app: my-nodejs-application-DOCKER_IMAGE_TAG
+    app: my-nodejs-application

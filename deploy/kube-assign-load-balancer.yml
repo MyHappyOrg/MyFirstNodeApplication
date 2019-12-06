@@ -9,6 +9,6 @@ spec:
    protocol: TCP
    name: http
  selector:
-   app: my-nodejs-application-DOCKER_IMAGE_TAG
+   app: my-nodejs-application
  type: LoadBalancer
  loadBalancerIP: RESERVED_IP_ADDRESS

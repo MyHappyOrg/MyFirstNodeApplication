@@ -1,13 +1,13 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
- name: my-nodejs-application-DOCKER_IMAGE_TAG
+ name: my-nodejs-application
 spec:
  replicas: 1
  template:
    metadata:
      labels:
-       app: my-nodejs-application-DOCKER_IMAGE_TAG
+       app: my-nodejs-application
    spec:
      containers:
      - name: my-nodejs-application
