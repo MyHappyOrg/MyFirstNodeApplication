@@ -28,7 +28,8 @@ jobs:
                gcloud --quiet config set compute/zone $GOOGLE_COMPUTE_ZONE_prod
              fi
              set -x
-             echo "v${CIRCLE_BUILD_NUM}" > docker_image_version
+             DOCKER_IMAGE_TAG=v${CIRCLE_BUILD_NUM}
+             echo "${DOCKER_IMAGE_TAG}" > docker_image_version
              echo "nodejs:$DOCKER_IMAGE_TAG" > full_docker_image_name
       - run:
           name: Build image
