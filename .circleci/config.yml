@@ -163,7 +163,7 @@ workflows:
   build-approve-deploy:
     jobs:
       - build
-      - can_deploy:
+      - can_deploy?:
           type: approval
           requires:
             - build
@@ -173,19 +173,26 @@ workflows:
           filters:
             branches:
               only: master
-      - verify_deployment:
+      - verified_deployment?:
           type: approval
           requires:
             - deploy_to_prod
-      - delete_old_pod:
-          requires:
-              - verify_deployment
       - configure_auto_scaling:
           requires:
-            - delete_old_pod
+            - verified_deployment?
       - configure_node_port:
           requires:
-            - delete_old_pod
+            - verified_deployment?
       - configure_load_balancer:
           requires:
-            - delete_old_pod
+            - verified_deployment?
+      - verified_service_configuration?:
+        type: approval
+        requires:
+          - configure_auto_scaling
+          - configure_node_port
+          - configure_load_balancer
+      - delete_old_pod:
+        requires:
+            - verified_service_configuration?
+          
