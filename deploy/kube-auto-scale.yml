@@ -1,7 +1,7 @@
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: my-nodejs-application-hpa
+  name: my-nodejs-application
   namespace: default
 spec:
     maxReplicas: 6

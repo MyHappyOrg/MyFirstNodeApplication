@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
- name: my-nodejs-application-lb
+ name: my-nodejs-application
 spec:
  ports:
  - port: 80
