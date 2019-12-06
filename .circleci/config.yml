@@ -70,8 +70,9 @@ jobs:
             gcloud --quiet auth configure-docker
             gcloud container clusters get-credentials $GOOGLE_CLUSTER_prod --region $GOOGLE_COMPUTE_ZONE_prod --project $GOOGLE_PROJECT_ID_prod
             #kubectl delete deployment my-nodejs-application --ignore-not-found=true
+            DOCKER_IMAGE_TAG=v${CIRCLE_BUILD_NUM}
             FULL_DOCKER_IMAGE_NAME=$(cat workspace/full_docker_image_name)
-            DEV_KUBE_CONFIG=$(cat deploy/kube-deploy-prod.yml | sed "s|DOCKER_IMAGE_NAME|$FULL_DOCKER_IMAGE_NAME|g" | sed "s|GOOGLE_PROJECT_ID|$GOOGLE_PROJECT_ID_prod|g")
+            DEV_KUBE_CONFIG=$(cat deploy/kube-deploy-prod.yml | sed "s|DOCKER_IMAGE_NAME|$FULL_DOCKER_IMAGE_NAME|g" | sed "s|GOOGLE_PROJECT_ID|$GOOGLE_PROJECT_ID_prod|g" | sed "s|DOCKER_IMAGE_TAG|$DOCKER_IMAGE_TAG|g")
             echo "$DEV_KUBE_CONFIG" | kubectl apply -f -
   delete_old_pod:
     docker:
@@ -110,7 +111,8 @@ jobs:
             gcloud --quiet config set compute/zone $GOOGLE_COMPUTE_ZONE_prod
             gcloud --quiet auth configure-docker
             gcloud container clusters get-credentials $GOOGLE_CLUSTER_prod --region $GOOGLE_COMPUTE_ZONE_prod --project $GOOGLE_PROJECT_ID_prod
-            DEV_KUBE_CONFIG=$(cat deploy/kube-assign-nodeport.yml)
+            DOCKER_IMAGE_TAG=v${CIRCLE_BUILD_NUM}
+            DEV_KUBE_CONFIG=$(cat deploy/kube-assign-nodeport.yml | sed "s|DOCKER_IMAGE_TAG|$DOCKER_IMAGE_TAG|g")
             echo "$DEV_KUBE_CONFIG" | kubectl apply -f -
   configure_load_balancer:
     docker:
@@ -130,7 +132,8 @@ jobs:
             gcloud --quiet config set compute/zone $GOOGLE_COMPUTE_ZONE_prod
             gcloud --quiet auth configure-docker
             gcloud container clusters get-credentials $GOOGLE_CLUSTER_prod --region $GOOGLE_COMPUTE_ZONE_prod --project $GOOGLE_PROJECT_ID_prod
-            DEV_KUBE_CONFIG=$(cat deploy/kube-assign-load-balancer.yml | sed "s|RESERVED_IP_ADDRESS|$GCLOUD_RESERVED_IP_ADDRESS|g")
+            DOCKER_IMAGE_TAG=v${CIRCLE_BUILD_NUM}
+            DEV_KUBE_CONFIG=$(cat deploy/kube-assign-load-balancer.yml | sed "s|RESERVED_IP_ADDRESS|$GCLOUD_RESERVED_IP_ADDRESS|g | sed "s|DOCKER_IMAGE_TAG|$DOCKER_IMAGE_TAG|g")
             echo "$DEV_KUBE_CONFIG" | kubectl apply -f -
   configure_auto_scaling:
     docker:
@@ -150,7 +153,8 @@ jobs:
             gcloud --quiet config set compute/zone $GOOGLE_COMPUTE_ZONE_prod
             gcloud --quiet auth configure-docker
             gcloud container clusters get-credentials $GOOGLE_CLUSTER_prod --region $GOOGLE_COMPUTE_ZONE_prod --project $GOOGLE_PROJECT_ID_prod
-            DEV_KUBE_CONFIG=$(cat deploy/kube-auto-scale.yml)
+            DOCKER_IMAGE_TAG=v${CIRCLE_BUILD_NUM}
+            DEV_KUBE_CONFIG=$(cat deploy/kube-auto-scale.yml | sed "s|DOCKER_IMAGE_TAG|$DOCKER_IMAGE_TAG|g)
             echo "$DEV_KUBE_CONFIG" | kubectl apply -f -
 workflows:
   version: 2
