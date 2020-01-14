@@ -11,6 +11,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
+//Updated
 app.use(morgan((tokens, req, res) => {
     return [
       tokens.method(req, res),
