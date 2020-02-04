@@ -1,0 +1,38 @@
+Install eslint and prettier extension in VSCode
+
+Enable format-on-save in editor project-level settings
+
+npm i -D    eslint
+            prettier
+            eslint-plugin-prettier
+            eslint-config-prettier
+            eslint-plugin-node
+            eslint-config-node
+
+Go to npm module site and search for eslint-config-airbnb
+Execute npx command to install bundled packages
+
+npx install-peerdeps --dev eslint-config-airbnb (Install bundled packages)
+
+Create file .prettierrc and add below content
+
+{
+  "singleQuote": true (automatically convert "" to '')
+}
+
+sudo npm i -g eslint (Install Globally)
+
+eslint --init ([CommonJS], [None of these], [Browser,Node], [JSON])
+
+.eslintrc.json file created
+
+Since we are not going to use airbnb, replace it with below line,
+
+{
+  "extends": ["airbnb", "prettier"],
+  "plugins": ["prettier"],
+  "rules": {}
+}
+
+Add .eslintignore file to exclude test files
+**/*test.js
