@@ -1,0 +1,1 @@
+https://improveandrepeat.com/2017/12/integrate-sonarqube-with-visual-studio-using-sonarlint/
