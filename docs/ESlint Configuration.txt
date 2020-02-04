@@ -6,6 +6,7 @@ airbnb - eslint configuration provider
 Install eslint and prettier extension in VSCode
 
 Enable format-on-save in editor project-level settings
+Enable eslint for javascript in editor project-level settings
 
 npm i -D    eslint
             prettier
