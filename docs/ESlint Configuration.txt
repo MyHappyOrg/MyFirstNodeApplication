@@ -1,3 +1,8 @@
+eslint - code syntax scanner
+prettier - code format scanner
+airbnb - eslint configuration provider
+
+
 Install eslint and prettier extension in VSCode
 
 Enable format-on-save in editor project-level settings
