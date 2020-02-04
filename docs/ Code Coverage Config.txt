@@ -1,0 +1,11 @@
+Install nyc module
+
+"test": "nyc mocha" (Update Test Script)
+
+For getting report install istanbul
+
+"coverage": "istanbul cover _mocha -x *.test.js",
+"showcoverage": "open coverage/lcov-report/index.html"
+
+npm run coverage
+npm run showcoverage
