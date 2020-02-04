@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "test": "nyc mocha",
+    "test": "nyc mocha $(find test -name '*.js')",
     "coverage": "istanbul cover _mocha -x *.test.js",
     "showcoverage": "open coverage/lcov-report/index.html"
   },

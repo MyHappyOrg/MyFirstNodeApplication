@@ -1,9 +1,9 @@
 node_modules
 coverage
 # Exclude xml Files
-*.xml
+# *.xml
 # Optional npm cache directory
-.npm
+# .npm
 
 # Optional REPL history
 .node_repl_history
@@ -13,5 +13,4 @@ coverage
 .test_reports
 .scannerwork
 .vscode/launch.json
-package-lock.json
 package-lock.json

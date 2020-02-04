@@ -3,7 +3,7 @@ const chai = require('chai');
 
 const { expect } = chai;
 chai.use(require('chai-as-promised'));
-const mocha = require('../app/api/v1/util/function/mocha');
+const mocha = require('../../../../../app/api/v1/util/function/mocha');
 
 describe('sum', function() {
   it('should return addition of two value', () => {
